@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusOS — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-bg: #F3F6F2;
+    --color-surface: #FFFFFF;
+    --color-surface-alt: #E9EEE7;
+    --color-ink: #1C2420;
+    --color-ink-muted: #5C6760;
+    --color-primary: #2C5AA0;
+    --color-primary-dark: #1E3F73;
+    --color-primary-tint: #E3ECF7;
+    --color-accent: #C9622B;
+    --color-accent-dark: #A34F22;
+    --color-border: #DCE3D9;
+    --color-danger: #B33A3A;
+    --color-danger-tint: #F8E4E2;
+    --color-warning-dark: #A9711F;
+    --color-warning-tint: #FBF0DD;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-card: 0 1px 2px rgba(28,36,32,0.04), 0 6px 18px rgba(28,36,32,0.06);
+    --shadow-card-hover: 0 2px 4px rgba(28,36,32,0.06), 0 14px 28px rgba(28,36,32,0.10);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Work Sans', sans-serif;
+  }
+
+  *, *::before, *::after{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{ font-family: var(--font-display); margin:0; }
+  p{ margin:0; }
+  button{ font-family: inherit; }
+  :focus-visible{ outline: 2.5px solid var(--color-accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ===== shell / header ===== */
+  .shell{ max-width: 1080px; margin: 0 auto; padding: 28px 24px 80px; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content: space-between;
+    gap: 16px; margin-bottom: 28px;
+  }
+  .brand{ display:flex; align-items:center; gap: 12px; }
+  .brand-mark{
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--color-primary); color: #fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-display); font-weight: 600; font-size: 18px;
+    flex-shrink: 0;
+  }
+  .brand-name{ font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand-sub{ color: var(--color-ink-muted); font-size: 13px; }
+  .stripe{
+    height: 5px; border-radius: 4px; overflow:hidden; display:flex; margin-bottom: 26px;
+  }
+  .stripe span{ flex:1; }
+  .stripe span:nth-child(1){ background: var(--color-primary); }
+  .stripe span:nth-child(2){ background: var(--color-accent); }
+
+  .hero{ margin-bottom: 30px; }
+  .hero h1{ font-size: clamp(26px, 3.4vw, 34px); font-weight: 600; letter-spacing: -0.01em; }
+  .hero p{ color: var(--color-ink-muted); margin-top: 6px; font-size: 15px; }
+
+  /* ===== dashboard grid ===== */
+  .dash-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .feature-card{
+    grid-column: span 1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 22px;
+    text-align: left;
+    cursor: pointer;
+    display:flex; flex-direction:column; gap: 10px;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    min-height: 140px;
+  }
+  .feature-card:hover, .feature-card:focus-visible{
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-primary);
+  }
+  .feature-card .icon{
+    width: 46px; height: 46px; border-radius: 12px;
+    background: var(--color-primary-tint);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 22px;
+  }
+  .feature-card h3{ font-size: 17px; font-weight: 600; }
+  .feature-card .desc{ color: var(--color-ink-muted); font-size: 13.5px; }
+  .feature-card .goto{
+    margin-top: auto; font-size: 13px; font-weight: 600; color: var(--color-primary);
+    display:flex; align-items:center; gap:4px;
+  }
+  .dash-grid .feature-card:nth-child(5){ grid-column: 1 / -1; }
+
+  .settings-card{
+    grid-column: 1 / -1;
+    background: var(--color-primary-dark);
+    color: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 28px 26px;
+    display:flex; align-items:center; gap: 20px;
+    cursor:pointer;
+    border: 1px solid var(--color-primary-dark);
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
+  }
+  .settings-card:hover, .settings-card:focus-visible{
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+  .settings-card .icon{
+    width: 54px; height: 54px; border-radius: 14px;
+    background: rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .settings-card h3{ font-size: 20px; font-weight: 600; }
+  .settings-card .desc{ color: rgba(255,255,255,0.72); font-size: 13.5px; margin-top: 3px; }
+
+  /* ===== announcements ===== */
+  .announcements{
+    grid-column: 1 / -1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 26px;
+  }
+  .announcements-head{
+    display:flex; align-items:center; justify-content: space-between; gap: 12px;
+    margin-bottom: 18px;
+  }
+  .announcements-head h3{ font-size: 19px; font-weight: 600; }
+  .btn{
+    font-family: var(--font-body); font-weight: 600; font-size: 14px;
+    border-radius: 10px; border: none; cursor: pointer;
+    padding: 10px 16px; transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .btn-accent{ background: var(--color-accent); color: #fff; }
+  .btn-accent:hover{ background: var(--color-accent-dark); }
+  .btn-ghost{ background: transparent; color: var(--color-ink); border: 1px solid var(--color-border); }
+  .btn-ghost:hover{ background: var(--color-surface-alt); }
+  .btn-primary{ background: var(--color-primary); color:#fff; }
+  .btn-primary:hover{ background: var(--color-primary-dark); }
+
+  .announcement-list{ display:flex; flex-direction:column; gap: 10px; }
+  .announcement-item{
+    display:flex; gap: 12px; padding: 14px 16px;
+    border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    background: var(--color-bg);
+  }
+  .announcement-item .badge{
+    align-self:flex-start; font-size: 11.5px; font-weight: 600;
+    color: var(--color-primary); background: var(--color-primary-tint);
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .announcement-body{ flex:1; min-width:0; }
+  .announcement-body .title-row{ display:flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .announcement-body h4{ font-family: var(--font-body); font-weight: 600; font-size: 14.5px; margin:0; }
+  .announcement-body .msg{ color: var(--color-ink-muted); font-size: 13.5px; margin-top: 3px; }
+  .announcement-body .meta{ color: var(--color-ink-muted); font-size: 12px; margin-top: 6px; white-space: nowrap; }
+  .empty-state{ color: var(--color-ink-muted); font-size: 14px; padding: 18px 4px; }
+
+  /* ===== modal ===== */
+  .modal-overlay{
+    position: fixed; inset: 0; background: rgba(20,26,22,0.44);
+    display:flex; align-items:center; justify-content:center; padding: 20px;
+    z-index: 50; opacity:0; pointer-events:none; transition: opacity 0.15s ease;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    background: var(--color-surface); border-radius: var(--radius-lg);
+    max-width: 460px; width: 100%; padding: 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+    transform: translateY(8px); transition: transform 0.15s ease;
+  }
+  .modal-overlay.open .modal{ transform: translateY(0); }
+  .modal h3{ font-size: 19px; font-weight: 600; margin-bottom: 4px; }
+  .modal .modal-sub{ color: var(--color-ink-muted); font-size: 13.5px; margin-bottom: 18px; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field textarea, .field select{
+    width:100%; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--color-border); font-family: var(--font-body); font-size: 14px;
+    background: var(--color-bg); color: var(--color-ink);
+  }
+  .field textarea{ resize: vertical; min-height: 70px; }
+  .field .err{ color: var(--color-danger); font-size: 12.5px; margin-top: 4px; display:none; }
+  .field.invalid .err{ display:block; }
+  .field.invalid input, .field.invalid textarea{ border-color: var(--color-danger); }
+  .modal-actions{ display:flex; justify-content:flex-end; gap: 10px; margin-top: 18px; }
+
+  /* ===== toast ===== */
+  .toast{
+    position: fixed; bottom: 24px; left:50%; transform: translateX(-50%) translateY(20px);
+    background: var(--color-primary-dark); color:#fff; padding: 12px 20px;
+    border-radius: 999px; font-size: 14px; font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    opacity:0; pointer-events:none; transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 60;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== sub-pages (placeholders) ===== */
+  .page{ display:none; }
+  .page.active{ display:block; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; color: var(--color-ink-muted);
+    font-size: 14px; font-weight: 600; background:none; border:none; cursor:pointer;
+    margin-bottom: 18px; padding: 4px 0;
+  }
+  .back-link:hover{ color: var(--color-primary); }
+  .subpage-card{
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    padding: 32px; text-align:center;
+  }
+  .subpage-card .icon-lg{
+    width: 64px; height:64px; border-radius: 16px; background: var(--color-primary-tint);
+    display:flex; align-items:center; justify-content:center; font-size: 30px;
+    margin: 0 auto 16px;
+  }
+  .subpage-card h2{ font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .subpage-card p{ color: var(--color-ink-muted); font-size: 14.5px; max-width: 420px; margin: 0 auto; }
+  .subpage-card .tag{
+    display:inline-block; margin-top: 18px; font-size: 12.5px; font-weight: 600;
+    color: var(--color-accent-dark); background: #FBEBDE; padding: 5px 12px; border-radius: 999px;
+  }
+
+  /* ===== queuekiller ===== */
+  .qk-summary{ display:flex; flex-wrap:wrap; gap: 14px; margin-bottom: 26px; }
+  .qk-summary-item{
+    flex: 1; min-width: 190px;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-card);
+    padding: 16px 18px;
+  }
+  .qk-summary-item .label{ font-size: 12.5px; color: var(--color-ink-muted); font-weight: 600; }
+  .qk-summary-item .value{ font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-top: 4px; }
+
+  .qk-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .qk-card{
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    padding: 22px; display:flex; flex-direction:column; gap: 12px;
+    transition: box-shadow 0.16s ease, transform 0.16s ease;
+  }
+  .qk-card:hover{ box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+  .qk-card-head{ display:flex; align-items:center; gap: 12px; }
+  .qk-card-head .icon{
+    width: 46px; height: 46px; border-radius: 12px; background: var(--color-primary-tint);
+    display:flex; align-items:center; justify-content:center; font-size: 22px; flex-shrink: 0;
+  }
+  .qk-card-head h3{ font-size: 17px; font-weight: 600; }
+  .qk-stats{ display:flex; flex-direction:column; gap: 6px; font-size: 13.5px; color: var(--color-ink-muted); }
+  .qk-stats strong{ color: var(--color-ink); font-weight: 600; }
+  .qk-status{
+    display:inline-flex; align-items:center; gap: 5px; align-self:flex-start;
+    font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+  }
+  .qk-status.low{ color: var(--color-primary); background: var(--color-primary-tint); }
+  .qk-status.moderate{ color: var(--color-warning-dark); background: var(--color-warning-tint); }
+  .qk-status.crowded{ color: var(--color-danger); background: var(--color-danger-tint); }
+  .qk-actions{ display:flex; gap: 10px; margin-top: 4px; }
+  .qk-actions .btn{ flex: 1; }
+
+  /* ===== lost & found ===== */
+  .lf-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .lf-card{
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    padding: 22px; display:flex; flex-direction:column; gap: 12px;
+    transition: box-shadow 0.16s ease, transform 0.16s ease;
+  }
+  .lf-card:hover{ box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+  .lf-card-head{ display:flex; align-items:center; gap: 12px; }
+  .lf-card-head .icon{
+    width: 46px; height: 46px; border-radius: 12px; background: var(--color-primary-tint);
+    display:flex; align-items:center; justify-content:center; font-size: 22px; flex-shrink: 0;
+  }
+  .lf-card-head h3{ font-size: 17px; font-weight: 600; }
+  .lf-meta{ display:flex; flex-direction:column; gap: 4px; font-size: 13.5px; color: var(--color-ink-muted); }
+  .lf-meta strong{ color: var(--color-ink); font-weight: 600; }
+  .lf-status{
+    display:inline-flex; align-items:center; gap: 5px; align-self:flex-start;
+    font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+  }
+  .lf-status.lost{ color: var(--color-danger); background: var(--color-danger-tint); }
+  .lf-status.possible{ color: var(--color-warning-dark); background: var(--color-warning-tint); }
+  .lf-status.confirmed{ color: var(--color-primary); background: var(--color-primary-tint); }
+  .lf-note{ font-size: 13px; color: var(--color-ink-muted); }
+  .lf-card .btn{ margin-top: 4px; }
+
+  .lf-modal-img{
+    width: 100%; max-height: 240px; object-fit: cover;
+    border-radius: var(--radius-md); border: 1px solid var(--color-border);
+    margin-bottom: 14px; display:block;
+  }
+  .lf-detail-row{ font-size: 13.5px; color: var(--color-ink-muted); margin-bottom: 8px; }
+  .lf-detail-row strong{ color: var(--color-ink); font-weight: 600; }
+  .lf-verify-note{
+    font-size: 12.5px; color: var(--color-warning-dark); background: var(--color-warning-tint);
+    padding: 8px 12px; border-radius: 10px; margin: 14px 0;
+  }
+  .lf-success h3{ margin-bottom: 6px; }
+  .lf-success p{ color: var(--color-ink-muted); font-size: 14px; margin-bottom: 4px; }
+
+  @media (max-width: 760px){
+    .lf-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* ===== responsive ===== */
+  @media (max-width: 760px){
+    .dash-grid{ grid-template-columns: 1fr; }
+    .feature-card{ grid-column: 1 / -1; }
+    .qk-grid{ grid-template-columns: 1fr; }
+    .settings-card{ flex-direction:row; padding: 22px; }
+    .announcements{ padding: 20px; }
+    .shell{ padding: 22px 16px 64px; }
+  }
+  @media (max-width: 420px){
+    .settings-card{ align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">CU</div>
+      <div>
+        <div class="brand-name">CampusOS</div>
+        <div class="brand-sub">Your campus, in one place</div>
+      </div>
+    </div>
+    <div class="brand-sub" id="todayLabel"></div>
+  </div>
+  <div class="stripe"><span></span><span></span></div>
+
+  <!-- ================= DASHBOARD PAGE ================= -->
+  <div class="page active" id="page-dashboard">
+    <div class="hero">
+      <h1>Good to see you.</h1>
+      <p>Everything you need on campus today, in one dashboard.</p>
+    </div>
+
+    <div class="dash-grid">
+
+      <button class="feature-card" data-target="page-queuekiller">
+        <div class="icon">⚡</div>
+        <h3>Queue Killer</h3>
+        <p class="desc">Check live wait times at the canteen, library, and labs.</p>
+        <span class="goto">Open →</span>
+      </button>
+
+      <button class="feature-card" data-target="page-unimall">
+        <div class="icon">🛍️</div>
+        <h3>UniMall</h3>
+        <p class="desc">Buy, sell, and trade with students across campus.</p>
+        <span class="goto">Open →</span>
+      </button>
+
+      <button class="feature-card" data-target="page-lostfound">
+        <div class="icon">🔍</div>
+        <h3>Lost &amp; Found</h3>
+        <p class="desc">Report a lost item or browse things others have found.</p>
+        <span class="goto">Open →</span>
+      </button>
+
+      <button class="feature-card" data-target="page-spacefinder">
+        <div class="icon">📍</div>
+        <h3>Space Finder</h3>
+        <p class="desc">See which study rooms, labs, and halls are free right now.</p>
+        <span class="goto">Open →</span>
+      </button>
+
+      <button class="feature-card" data-target="page-events">
+        <div class="icon">🎉</div>
+        <h3>Campus Events</h3>
+        <p class="desc">Fests, workshops, and meetups happening this week.</p>
+        <span class="goto">Open →</span>
+      </button>
+
+      <button class="settings-card" data-target="page-settings">
+        <div class="icon">⚙️</div>
+        <div>
+          <h3>Settings</h3>
+          <p class="desc">Manage your profile, notifications, and preferences.</p>
+        </div>
+      </button>
+
+      <div class="announcements">
+        <div class="announcements-head">
+          <h3>📢 Announcements</h3>
+          <button class="btn btn-accent" id="openAddAnnouncement">+ Add Announcement</button>
+        </div>
+        <div class="announcement-list" id="announcementList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= PLACEHOLDER PAGES ================= -->
+  <div class="page" id="page-queuekiller">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="hero">
+      <h1>QueueKiller 🚶‍♂️</h1>
+      <p>Beat the queue. Save your time.</p>
+    </div>
+
+    <div class="qk-summary">
+      <div class="qk-summary-item">
+        <div class="label">Total people across areas</div>
+        <div class="value" id="qkTotalPeople">0</div>
+      </div>
+      <div class="qk-summary-item">
+        <div class="label">Most crowded</div>
+        <div class="value" id="qkMostCrowded">—</div>
+      </div>
+    </div>
+
+    <div class="qk-grid" id="qkGrid"></div>
+  </div>
+
+  <div class="page" id="page-unimall">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="subpage-card">
+      <div class="icon-lg">🛍️</div>
+      <h2>UniMall</h2>
+      <p>A student marketplace for buying, selling, and trading textbooks, gear, and more.</p>
+      <span class="tag">Page under construction</span>
+    </div>
+  </div>
+
+  <div class="page" id="page-lostfound">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="hero">
+      <h1>Lost &amp; Found 🔍</h1>
+      <p>Report a lost item, or help reunite one with its owner.</p>
+    </div>
+
+    <div class="lf-grid" id="lfGrid"></div>
+  </div>
+
+  <div class="page" id="page-spacefinder">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="subpage-card">
+      <div class="icon-lg">📍</div>
+      <h2>Space Finder</h2>
+      <p>Real-time availability for study rooms, labs, and lecture halls will show up here.</p>
+      <span class="tag">Page under construction</span>
+    </div>
+  </div>
+
+  <div class="page" id="page-events">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="subpage-card">
+      <div class="icon-lg">🎉</div>
+      <h2>Campus Events</h2>
+      <p>Fests, workshops, and club meetups — all in one calendar.</p>
+      <span class="tag">Page under construction</span>
+    </div>
+  </div>
+
+  <div class="page" id="page-settings">
+    <button class="back-link" data-back>← Back to dashboard</button>
+    <div class="subpage-card">
+      <div class="icon-lg">⚙️</div>
+      <h2>Settings</h2>
+      <p>Profile details, notification preferences, and account options will live here.</p>
+      <span class="tag">Page under construction</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= ADD ANNOUNCEMENT MODAL ================= -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Add announcement</h3>
+    <p class="modal-sub">This publishes immediately to everyone viewing the dashboard.</p>
+    <form id="announcementForm" novalidate>
+      <div class="field" id="field-title">
+        <label for="af-title">Title</label>
+        <input type="text" id="af-title" placeholder="e.g. Library timing changed">
+        <div class="err">Enter a title.</div>
+      </div>
+      <div class="field" id="field-message">
+        <label for="af-message">Message</label>
+        <textarea id="af-message" placeholder="Add the details students need to know"></textarea>
+        <div class="err">Enter a message.</div>
+      </div>
+      <div class="field">
+        <label for="af-category">Category</label>
+        <select id="af-category">
+          <option value="General">General</option>
+          <option value="Academics">Academics</option>
+          <option value="Events">Events</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Urgent">Urgent</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="af-datetime">Date &amp; time</label>
+        <input type="datetime-local" id="af-datetime">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelAnnouncement">Cancel</button>
+        <button type="submit" class="btn btn-primary">Publish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= FOUND ITEM CONFIRMATION MODAL ================= -->
+<div class="modal-overlay" id="foundItemModal">
+  <div class="modal">
+    <div id="foundItemFormWrap">
+      <h3>Found Your Item?</h3>
+      <p class="modal-sub">Fill this in if you think you've found a matching item.</p>
+      <form id="foundItemForm" novalidate>
+        <div class="field" id="field-fi-name">
+          <label for="fi-name">Finder Name</label>
+          <input type="text" id="fi-name" placeholder="Enter your name">
+          <div class="err">Enter your name.</div>
+        </div>
+        <div class="field" id="field-fi-image">
+          <label for="fi-image">Upload Image</label>
+          <input type="file" id="fi-image" accept="image/*">
+          <div class="err">Upload a photo of the item.</div>
+        </div>
+        <div class="field" id="field-fi-message">
+          <label for="fi-message">Message</label>
+          <textarea id="fi-message" placeholder="Add a short message about where and when you found the item.&#10;e.g. I found this black backpack near Uni-Mall around 6:30 PM."></textarea>
+          <div class="err">Add a short message.</div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelFoundItem">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Confirmation</button>
+        </div>
+      </form>
+    </div>
+    <div id="foundItemSuccessWrap" class="lf-success" style="display:none;">
+      <h3>Confirmation sent successfully!</h3>
+      <p>Your photo and details have been submitted to the student who reported the item.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="closeFoundItemSuccess">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= VIEW MATCH MODAL ================= -->
+<div class="modal-overlay" id="viewMatchModal">
+  <div class="modal">
+    <h3>Possible Match</h3>
+    <p class="modal-sub">Compare the details below before you claim this item.</p>
+    <div id="viewMatchContent"></div>
+    <div class="lf-verify-note">Please verify the item carefully before claiming it.</div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="notMyItemBtn">Not My Item</button>
+      <button type="button" class="btn btn-primary" id="confirmMatchBtn">✓ This Looks Like My Item</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'campusos_announcements';
+
+  var seedAnnouncements = [
+    { id: 's1', title: 'Library timing changed', message: 'The central library will now stay open until 11 PM on weekdays.', category: 'General', datetime: new Date(Date.now() - 1000*60*60*3).toISOString() },
+    { id: 's2', title: 'Campus event registration is open', title2:null, message: 'Sign-ups for the Spring Tech Fest are now open on Campus Events.', category: 'Events', datetime: new Date(Date.now() - 1000*60*60*20).toISOString() },
+    { id: 's3', title: 'Maintenance work scheduled', message: 'Hot water will be unavailable in Block C hostel from 2–4 PM tomorrow.', category: 'Maintenance', datetime: new Date(Date.now() - 1000*60*60*30).toISOString() },
+    { id: 's4', title: 'Important student notice', message: 'Mid-semester fee payment deadline has been extended to the 30th.', category: 'Urgent', datetime: new Date(Date.now() - 1000*60*60*50).toISOString() }
+  ];
+
+  function loadAnnouncements(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedAnnouncements));
+        return seedAnnouncements.slice();
+      }
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : seedAnnouncements.slice();
+    }catch(e){
+      return seedAnnouncements.slice();
+    }
+  }
+
+  function saveAnnouncements(list){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  function formatDate(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    var opts = { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+    return d.toLocaleString(undefined, opts);
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  var listEl = document.getElementById('announcementList');
+
+  function renderAnnouncements(){
+    var items = loadAnnouncements().slice().sort(function(a,b){
+      return new Date(b.datetime) - new Date(a.datetime);
+    });
+    if(items.length === 0){
+      listEl.innerHTML = '<div class="empty-state">No announcements yet. Add the first one.</div>';
+      return;
+    }
+    listEl.innerHTML = items.map(function(a){
+      return (
+        '<div class="announcement-item">' +
+          '<span class="badge">' + escapeHtml(a.category || 'General') + '</span>' +
+          '<div class="announcement-body">' +
+            '<div class="title-row">' +
+              '<h4>📢 ' + escapeHtml(a.title) + '</h4>' +
+              '<span class="meta">' + formatDate(a.datetime) + '</span>' +
+            '</div>' +
+            '<div class="msg">' + escapeHtml(a.message) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  renderAnnouncements();
+
+  // ---- today label ----
+  document.getElementById('todayLabel').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+
+  // ---- page navigation ----
+  var pages = document.querySelectorAll('.page');
+  function showPage(id){
+    pages.forEach(function(p){ p.classList.toggle('active', p.id === id); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-target]').forEach(function(el){
+    el.addEventListener('click', function(){ showPage(el.getAttribute('data-target')); });
+  });
+  document.querySelectorAll('[data-back]').forEach(function(el){
+    el.addEventListener('click', function(){ showPage('page-dashboard'); });
+  });
+
+  // ---- toast ----
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+
+  // ---- modal ----
+  var overlay = document.getElementById('modalOverlay');
+  var form = document.getElementById('announcementForm');
+  var titleInput = document.getElementById('af-title');
+  var messageInput = document.getElementById('af-message');
+  var categoryInput = document.getElementById('af-category');
+  var datetimeInput = document.getElementById('af-datetime');
+
+  function openModal(){
+    overlay.classList.add('open');
+    document.getElementById('field-title').classList.remove('invalid');
+    document.getElementById('field-message').classList.remove('invalid');
+    form.reset();
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    datetimeInput.value = now.toISOString().slice(0,16);
+    setTimeout(function(){ titleInput.focus(); }, 50);
+  }
+  function closeModal(){ overlay.classList.remove('open'); }
+
+  document.getElementById('openAddAnnouncement').addEventListener('click', openModal);
+  document.getElementById('cancelAnnouncement').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var valid = true;
+    if(!titleInput.value.trim()){
+      document.getElementById('field-title').classList.add('invalid');
+      valid = false;
+    } else {
+      document.getElementById('field-title').classList.remove('invalid');
+    }
+    if(!messageInput.value.trim()){
+      document.getElementById('field-message').classList.add('invalid');
+      valid = false;
+    } else {
+      document.getElementById('field-message').classList.remove('invalid');
+    }
+    if(!valid) return;
+
+    var dtValue = datetimeInput.value ? new Date(datetimeInput.value).toISOString() : new Date().toISOString();
+    var newAnnouncement = {
+      id: 'a' + Date.now(),
+      title: titleInput.value.trim(),
+      message: messageInput.value.trim(),
+      category: categoryInput.value,
+      datetime: dtValue
+    };
+
+    var items = loadAnnouncements();
+    items.push(newAnnouncement);
+    saveAnnouncements(items);
+    renderAnnouncements();
+    closeModal();
+    showToast('Announcement published');
+  });
+
+})();
+</script>
+
+<script>
+(function(){
+  // ---- demo data ----
+  // Swap this array (or the two functions below it) for real API calls once a
+  // backend exists — everything else (rendering, status, wait time) stays the same.
+  var qkAreas = [
+    { id: 'laundry', name: 'Laundry',       icon: '🧺', population: 24 },
+    { id: 'mess',    name: 'Mess',          icon: '🍽️', population: 35 },
+    { id: 'library', name: 'Library',       icon: '📚', population: 12 },
+    { id: 'busstop', name: 'Bus Stop',      icon: '🚌', population: 45 },
+    { id: 'health',  name: 'Health Centre', icon: '🏥', population: 5  }
+  ];
+
+  function getStatus(pop){
+    if(pop <= 15) return { key: 'low', label: '🟢 Low' };
+    if(pop <= 40) return { key: 'moderate', label: '🟡 Moderate' };
+    return { key: 'crowded', label: '🔴 Crowded' };
+  }
+
+  function getWaitMinutes(pop){
+    // Simple demo formula — replace with real average-service-time data later.
+    return Math.max(0, Math.round(pop / 3));
+  }
+
+  var qkToastTimer = null;
+  function qkToast(msg){
+    var el = document.getElementById('toast');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(qkToastTimer);
+    qkToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+  }
+
+  function renderQueueKiller(){
+    var grid = document.getElementById('qkGrid');
+    if(!grid) return;
+
+    grid.innerHTML = qkAreas.map(function(area){
+      var status = getStatus(area.population);
+      var wait = getWaitMinutes(area.population);
+      return (
+        '<div class="qk-card">' +
+          '<div class="qk-card-head">' +
+            '<div class="icon">' + area.icon + '</div>' +
+            '<h3>' + area.name + '</h3>' +
+          '</div>' +
+          '<div class="qk-stats">' +
+            '<div>Current Population: <strong>' + area.population + '</strong></div>' +
+            '<div>Estimated Wait: <strong>' + wait + ' min</strong></div>' +
+          '</div>' +
+          '<span class="qk-status ' + status.key + '">' + status.label + '</span>' +
+          '<div class="qk-actions">' +
+            '<button class="btn btn-primary" data-checkin="' + area.id + '">➕ Check In</button>' +
+            '<button class="btn btn-ghost" data-checkout="' + area.id + '">➖ Check Out</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    var total = qkAreas.reduce(function(sum, a){ return sum + a.population; }, 0);
+    var busiest = qkAreas.reduce(function(max, a){ return a.population > max.population ? a : max; }, qkAreas[0]);
+    document.getElementById('qkTotalPeople').textContent = total;
+    document.getElementById('qkMostCrowded').textContent = busiest.icon + ' ' + busiest.name;
+
+    grid.querySelectorAll('[data-checkin]').forEach(function(btn){
+      btn.addEventListener('click', function(){ checkIn(btn.getAttribute('data-checkin')); });
+    });
+    grid.querySelectorAll('[data-checkout]').forEach(function(btn){
+      btn.addEventListener('click', function(){ checkOut(btn.getAttribute('data-checkout')); });
+    });
+  }
+
+  function checkIn(id){
+    var area = qkAreas.find(function(a){ return a.id === id; });
+    if(!area) return;
+    area.population += 1;
+    renderQueueKiller();
+    qkToast('✅ You are checked in!');
+  }
+
+  function checkOut(id){
+    var area = qkAreas.find(function(a){ return a.id === id; });
+    if(!area) return;
+    area.population = Math.max(0, area.population - 1);
+    renderQueueKiller();
+    qkToast('✅ You are checked out!');
+  }
+
+  renderQueueKiller();
+})();
+</script>
+
+<script>
+(function(){
+  // ---- demo data ----
+  // Swap this array (and the confirm/reject handlers below) for real API calls
+  // once a backend exists — rendering and modal logic stay the same.
+  var lostItems = [
+    { id: 'backpack', icon: '🎒', name: 'Black Backpack', location: 'Uni-Mall', time: '6:30 PM', status: 'lost', found: null },
+    { id: 'keys',     icon: '🔑', name: 'Keys with Red Keychain', location: 'Library', time: '2:15 PM', status: 'lost', found: null },
+    { id: 'phone',    icon: '📱', name: 'Phone (Blue Case)', location: 'Bus Stop', time: '9:00 AM', status: 'lost', found: null },
+    { id: 'jacket',   icon: '🧥', name: 'Denim Jacket', location: 'Mess', time: '1:00 PM', status: 'lost', found: null }
+  ];
+
+  var activeItemId = null;
+
+  function statusMeta(status){
+    if(status === 'possible') return { key: 'possible', label: '🟡 Possible Match' };
+    if(status === 'confirmed') return { key: 'confirmed', label: '✅ Match Confirmed' };
+    return { key: 'lost', label: '🔴 Lost' };
+  }
+
+  var lfToastTimer = null;
+  function lfToast(msg){
+    var el = document.getElementById('toast');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(lfToastTimer);
+    lfToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+  }
+
+  function renderLostFound(){
+    var grid = document.getElementById('lfGrid');
+    if(!grid) return;
+
+    grid.innerHTML = lostItems.map(function(item){
+      var status = statusMeta(item.status);
+      var actionBtn = '';
+      var note = '';
+
+      if(item.status === 'lost'){
+        actionBtn = '<button class="btn btn-primary" data-found="' + item.id + '">📷 I Found This Item</button>';
+      } else if(item.status === 'possible'){
+        note = '<p class="lf-note">Someone has reported finding an item that may match this description.</p>';
+        actionBtn = '<button class="btn btn-ghost" data-view="' + item.id + '">View Match</button>';
+      } else if(item.status === 'confirmed'){
+        note = '<p class="lf-note">Match confirmed — you can now contact the finder.</p>';
+        actionBtn = '<button class="btn btn-ghost" data-view="' + item.id + '">View Match</button>';
+      }
+
+      return (
+        '<div class="lf-card">' +
+          '<div class="lf-card-head">' +
+            '<div class="icon">' + item.icon + '</div>' +
+            '<h3>' + item.name + '</h3>' +
+          '</div>' +
+          '<div class="lf-meta">' +
+            '<div>Lost at: <strong>' + item.location + '</strong></div>' +
+            '<div>Time: <strong>' + item.time + '</strong></div>' +
+          '</div>' +
+          '<span class="lf-status ' + status.key + '">' + status.label + '</span>' +
+          note +
+          actionBtn +
+        '</div>'
+      );
+    }).join('');
+
+    grid.querySelectorAll('[data-found]').forEach(function(btn){
+      btn.addEventListener('click', function(){ openFoundItemModal(btn.getAttribute('data-found')); });
+    });
+    grid.querySelectorAll('[data-view]').forEach(function(btn){
+      btn.addEventListener('click', function(){ openViewMatchModal(btn.getAttribute('data-view')); });
+    });
+  }
+
+  // ---- Found Item modal ----
+  var foundItemModal = document.getElementById('foundItemModal');
+  var foundItemFormWrap = document.getElementById('foundItemFormWrap');
+  var foundItemSuccessWrap = document.getElementById('foundItemSuccessWrap');
+  var foundItemForm = document.getElementById('foundItemForm');
+  var fiName = document.getElementById('fi-name');
+  var fiImage = document.getElementById('fi-image');
+  var fiMessage = document.getElementById('fi-message');
+
+  function openFoundItemModal(itemId){
+    activeItemId = itemId;
+    foundItemForm.reset();
+    document.getElementById('field-fi-name').classList.remove('invalid');
+    document.getElementById('field-fi-image').classList.remove('invalid');
+    document.getElementById('field-fi-message').classList.remove('invalid');
+    foundItemFormWrap.style.display = '';
+    foundItemSuccessWrap.style.display = 'none';
+    foundItemModal.classList.add('open');
+    setTimeout(function(){ fiName.focus(); }, 50);
+  }
+  function closeFoundItemModal(){ foundItemModal.classList.remove('open'); activeItemId = null; }
+
+  document.getElementById('cancelFoundItem').addEventListener('click', closeFoundItemModal);
+  document.getElementById('closeFoundItemSuccess').addEventListener('click', closeFoundItemModal);
+  foundItemModal.addEventListener('click', function(e){ if(e.target === foundItemModal) closeFoundItemModal(); });
+
+  foundItemForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var valid = true;
+    if(!fiName.value.trim()){
+      document.getElementById('field-fi-name').classList.add('invalid'); valid = false;
+    } else {
+      document.getElementById('field-fi-name').classList.remove('invalid');
+    }
+    if(!fiImage.files || !fiImage.files[0]){
+      document.getElementById('field-fi-image').classList.add('invalid'); valid = false;
+    } else {
+      document.getElementById('field-fi-image').classList.remove('invalid');
+    }
+    if(!fiMessage.value.trim()){
+      document.getElementById('field-fi-message').classList.add('invalid'); valid = false;
+    } else {
+      document.getElementById('field-fi-message').classList.remove('invalid');
+    }
+    if(!valid) return;
+
+    var item = lostItems.find(function(i){ return i.id === activeItemId; });
+    if(!item) return;
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      item.found = {
+        finderName: fiName.value.trim(),
+        imageDataUrl: reader.result,
+        message: fiMessage.value.trim(),
+        location: item.location,
+        foundAt: new Date().toISOString()
+      };
+      item.status = 'possible';
+      renderLostFound();
+      foundItemFormWrap.style.display = 'none';
+      foundItemSuccessWrap.style.display = '';
+    };
+    reader.readAsDataURL(fiImage.files[0]);
+  });
+
+  // ---- View Match modal ----
+  var viewMatchModal = document.getElementById('viewMatchModal');
+  var viewMatchContent = document.getElementById('viewMatchContent');
+
+  function formatDateTime(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function openViewMatchModal(itemId){
+    var item = lostItems.find(function(i){ return i.id === itemId; });
+    if(!item || !item.found) return;
+    activeItemId = itemId;
+    var status = statusMeta(item.status);
+
+    viewMatchContent.innerHTML =
+      '<img class="lf-modal-img" src="' + item.found.imageDataUrl + '" alt="Found item photo">' +
+      '<div class="lf-detail-row"><strong>Item reported lost:</strong> ' + item.icon + ' ' + escapeHtml(item.name) + '</div>' +
+      '<div class="lf-detail-row"><strong>Lost at:</strong> ' + escapeHtml(item.location) + ' · ' + escapeHtml(item.time) + '</div>' +
+      '<div class="lf-detail-row"><strong>Finder:</strong> ' + escapeHtml(item.found.finderName) + '</div>' +
+      '<div class="lf-detail-row"><strong>Finder\'s message:</strong> ' + escapeHtml(item.found.message) + '</div>' +
+      '<div class="lf-detail-row"><strong>Found location:</strong> ' + escapeHtml(item.found.location) + '</div>' +
+      '<div class="lf-detail-row"><strong>Found date/time:</strong> ' + formatDateTime(item.found.foundAt) + '</div>' +
+      '<span class="lf-status ' + status.key + '">' + status.label + '</span>';
+
+    viewMatchModal.classList.add('open');
+  }
+  function closeViewMatchModal(){ viewMatchModal.classList.remove('open'); activeItemId = null; }
+
+  viewMatchModal.addEventListener('click', function(e){ if(e.target === viewMatchModal) closeViewMatchModal(); });
+
+  document.getElementById('confirmMatchBtn').addEventListener('click', function(){
+    var item = lostItems.find(function(i){ return i.id === activeItemId; });
+    if(!item) return;
+    item.status = 'confirmed';
+    renderLostFound();
+    closeViewMatchModal();
+    lfToast('Match confirmed! You can now contact the finder.');
+  });
+
+  document.getElementById('notMyItemBtn').addEventListener('click', function(){
+    var item = lostItems.find(function(i){ return i.id === activeItemId; });
+    if(!item) return;
+    item.status = 'lost';
+    item.found = null;
+    renderLostFound();
+    closeViewMatchModal();
+    lfToast('Item marked as still lost.');
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    if(foundItemModal.classList.contains('open')) closeFoundItemModal();
+    if(viewMatchModal.classList.contains('open')) closeViewMatchModal();
+  });
+
+  renderLostFound();
+})();
+</script>
+
+</body>
+</html>
